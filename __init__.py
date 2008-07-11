@@ -50,7 +50,7 @@ class User(MetaObject):
 
         content_type = ContentType.objects.get_for_model(instance)
         objects = Permission.objects.filter(user=self, content_type__pk=content_type.id, object_id=instance.id, name=perm)
-        if len(objects)>0:
+        if objects.count()>0:
             return True
             
         # check groups
@@ -59,6 +59,12 @@ class User(MetaObject):
                 if group.has_row_perm(instance, perm):
                     return True
         return False
+        
+    def get_rows_with_permission(self, instance, perm):
+        content_type = ContentType.objects.get_for_model(instance)
+        objects = Permission.objects.filter(Q(user=self) | Q(group__in=self.groups.all()), content_type__pk=content_type.id, name=perm)
+        return objects
+        
             
 class Group(MetaObject):
     def add_row_perm(self, instance, perm):
@@ -82,10 +88,13 @@ class Group(MetaObject):
     def has_row_perm(self, instance, perm):
         content_type = ContentType.objects.get_for_model(instance)
         objects = Permission.objects.filter(group=self, content_type__pk=content_type.id, object_id=instance.id, name=perm)
-        if len(objects)>0:
+        if objects.count()>0:
             return True
         else:
             return False
             
-            
+    def get_rows_with_permission(self, instance, perm):
+        content_type = ContentType.objects.get_for_model(instance)
+        objects = Permission.objects.filter(group=self, content_type__pk=contet_type.id, name=perm)
+        return objects
         
