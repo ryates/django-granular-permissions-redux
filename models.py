@@ -5,7 +5,7 @@ from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User, Group
 from django.contrib import admin
 
-if VERSION[2]=='newforms-admin' or VERSION[1]>0:
+if VERSION[0]=='newforms-admin' or VERSION[0]>0:
     class Permission(models.Model):
         name = models.CharField(max_length=16)
         content_type = models.ForeignKey(ContentType, related_name="row_permissions")
